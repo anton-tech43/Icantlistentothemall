@@ -18,7 +18,7 @@ Current status: Waiting for manual prompt test results before agents begin devel
 | Agent | Scope | Status |
 |---|---|---|
 | Agent 1 | RSS Monitor & Audio Acquisition | Complete — Supabase populated with 5 podcasts and 1,280+ queued episodes across all feeds. Agent 2 can begin processing. |
-| Agent 2 | AI Pipeline (Transcription → Writing) | Phase 1-3 code pushed. Prompts seeded, queue trimmed to 5 test episodes. Architecture pivoting to Claude Code routines (no Anthropic API). Awaiting routine setup. |
+| Agent 2 | AI Pipeline (Transcription → Writing) | Routine migration complete: all SDK callers replaced with CLI helpers + PROMPT.md playbook. Awaiting routine creation in claude.ai/code/routines + Cloud Environment setup. |
 | Agent 3 | PDF Generation | Phase 1 complete — HTML template, Puppeteer, parser, storage, orchestrator all built. 3 test PDFs generated. Awaiting Anton review. |
 | Agent 4 | Website (Next.js Frontend) | Phase 1-4 complete — all pages built, SEO, OG images, responsive. Remaining: Plausible integration (needs domain), sitemap (needs domain), swap seed data for Supabase queries. |
 | Agent 5 | Newsletter & Email System | Phase 1 in progress |
@@ -207,6 +207,7 @@ Record every significant decision made during development. Format: date, who dec
 | Issue | Reported By | Status | Resolution |
 |---|---|---|---|
 | Agent 5 needs `/confirmed` page on the site for double opt-in redirect. Simple manuscript dialogue: "You're in" he said / –Headphones off we said. | Agent 5 | Open — waiting for Agent 4 | Already logged in Decisions Log. Agent 4 to build. |
+| Agent 5: please pivot newsletter generation away from `@anthropic-ai/sdk` and over to Claude Code routines (same pattern Agent 2 just migrated to: PROMPT.md playbook + CLI helpers). Anton: "we don't want to use the API calls — this saves us a lot of money." Reference Agent 2's migration as a template. Once Agent 5 pivots, the `@anthropic-ai/sdk` dep can be removed from `package.json`. | Agent 2 | Open — for Agent 5 to action | Migrate using the PROMPT.md + scripts/ pattern. |
 
 ---
 
