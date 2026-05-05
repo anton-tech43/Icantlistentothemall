@@ -3,7 +3,7 @@
 > This file is the single source of truth for the project. Every agent reads this before starting work and updates it after completing any task. If it's not in this file, it didn't happen.
 
 **Last updated:** 2026-04-16
-**Updated by:** Agent 3
+**Updated by:** Agent 2
 
 ---
 
@@ -18,7 +18,7 @@ Current status: Waiting for manual prompt test results before agents begin devel
 | Agent | Scope | Status |
 |---|---|---|
 | Agent 1 | RSS Monitor & Audio Acquisition | Complete — Supabase populated with 5 podcasts and 1,280+ queued episodes across all feeds. Agent 2 can begin processing. |
-| Agent 2 | AI Pipeline (Transcription → Writing) | Phase 1-3 complete — all pipeline steps built, awaiting Supabase schema + test data |
+| Agent 2 | AI Pipeline (Transcription → Writing) | Phase 1-3 code pushed. Prompts seeded, queue trimmed to 5 test episodes. Architecture pivoting to Claude Code routines (no Anthropic API). Awaiting routine setup. |
 | Agent 3 | PDF Generation | Phase 1 complete — HTML template, Puppeteer, parser, storage, orchestrator all built. 3 test PDFs generated. Awaiting Anton review. |
 | Agent 4 | Website (Next.js Frontend) | Phase 1-4 complete — all pages built, SEO, OG images, responsive. Remaining: Plausible integration (needs domain), sitemap (needs domain), swap seed data for Supabase queries. |
 | Agent 5 | Newsletter & Email System | Phase 1 in progress |
@@ -194,6 +194,8 @@ Record every significant decision made during development. Format: date, who dec
 | 2026-04-16 | Agent 5: Using local SQLite for development (same pattern as Agent 1). subscribers and newsletters tables created. | Supabase not yet created. SQLite mirrors the Supabase schema. DB layer is a thin wrapper for swap. |
 | 2026-04-16 | Agent 5: Newsletter approval via two email links ("Approve and send" / "Hold for review") hitting Railway API endpoints. | Simplest v1 approach. No admin UI needed. Approved by Anton. |
 | 2026-04-16 | Agent 5: Agent 5 owns the `newsletter_composition` prompt (stored in prompt_versions). | The prompt that assembles a full newsletter from multiple episodes' material was not in the specs. Anton confirmed Agent 5 writes and owns it. |
+| 2026-04-16 | Curated test set: 5 episodes (one from each podcast, varied formats and lengths). Other 2,076 back-catalogue episodes marked `skipped` with reason `back_catalogue_not_selected`. Going forward: process one new episode per week (scarcity over abundance). | Decided by Anton. Brand premise is "people read what's on offer this month," not a 1,000-book firehose. Processing all 1,000 would also cost ~$2,000. Logged by Agent 2. |
+| 2026-04-16 | Agent 2: pivoting from Anthropic SDK calls to Claude Code routines. Cloud-hosted scheduled remote agents where Claude itself does the AI work natively (no API tokens billed; covered by enterprise license). Files coupled to the SDK (`utils/claude.js`, the four pass files, self-review) need rewriting as helper modules; deterministic logic (chunking, DB, Deepgram, email, prompt versioning) is reused as-is. | Pattern proven in another BookBeat project (football news rewriting). Eliminates per-call API costs entirely. Decided by Anton, logged by Agent 2. |
 | 2026-04-16 | Agent 5: Hourly alert monitoring cron. Agent 5 queries all tables independently — no cross-agent coupling. | Simpler architecture. Other agents don't call alert functions. Approved by Anton. |
 | 2026-04-16 | Agent 1: Swapped SQLite → Supabase. New files: `db-supabase.js`, `episode-detector-supabase.js`, `feed-monitor-supabase.js`. 5 podcasts seeded + 1,280+ episodes queued. | Supabase schema is live. Agent 2 can now process the queue. SQLite files remain for local dev reference. |
 | 2026-04-16 | Agent 1: Skipped full ~2,600 episode backfill. Pre-build spec only needs 10 launch episodes; Supabase already has 1,280+. | Background load failed at ~1,273 episodes (exit code 4, likely sequential HTTP fragility). Anton confirmed 10 is enough. Future 6-hour cycles will catch new episodes naturally. |
