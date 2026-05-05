@@ -1,0 +1,21 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+*.log
+src/agent-3/test/output/
+dev.sqlite
+dev.sqlite-wal
+dev.sqlite-shm
+tmp/
+episodes.json
+.claude/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Misc
+.DS_Store
+*.tsbuildinfo
