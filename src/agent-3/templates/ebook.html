@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('{{fontRegularUrl}}') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('{{fontBoldUrl}}') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('{{fontItalicUrl}}') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    color: #111111;
+    background: #FFFFFF;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 210mm;
+    padding: 20mm 20mm 22mm;
+    position: relative;
+    page-break-after: always;
+  }
+
+  /* Fixed-height containers for single-page layouts */
+  .cover,
+  .page-two,
+  .last-page {
+    height: 297mm;
+    overflow: hidden;
+  }
+
+  .page:last-child {
+    page-break-after: auto;
+  }
+
+  /* ─── COVER PAGE ─── */
+
+  .cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 0;
+  }
+
+  .cover .accent-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: {{accentColour}};
+  }
+
+  .cover .content-area {
+    margin-top: 70mm;
+    padding-left: 6mm;
+  }
+
+  .cover .episode-title {
+    font-size: 24pt;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #000000;
+    max-width: 150mm;
+    margin-bottom: 10mm;
+  }
+
+  .cover .episode-meta {
+    font-size: 11pt;
+    color: #666666;
+    line-height: 1.6;
+  }
+
+  .cover .episode-meta .guest-name {
+    margin-bottom: 2mm;
+  }
+
+  .cover .bottom-left {
+    position: absolute;
+    bottom: 22mm;
+    left: 26mm;
+    font-size: 8pt;
+    color: #666666;
+    letter-spacing: 0.5px;
+  }
+
+  .cover .bottom-right {
+    position: absolute;
+    bottom: 22mm;
+    right: 26mm;
+    font-size: 8pt;
+    color: #666666;
+    text-align: right;
+  }
+
+  /* ─── PAGE TWO ─── */
+
+  .page-two {
+    padding-top: 0;
+  }
+
+  .page-two .accent-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: {{accentColour}};
+  }
+
+  .page-two .self-rating {
+    margin-top: 25mm;
+    padding-left: 6mm;
+    font-size: 10.5pt;
+    color: #333333;
+    line-height: 1.7;
+    max-width: 150mm;
+    font-style: italic;
+  }
+
+  .page-two .chapter-list {
+    margin-top: 14mm;
+    padding-left: 6mm;
+  }
+
+  .page-two .chapter-list-title {
+    font-size: 9pt;
+    color: #666666;
+    margin-bottom: 5mm;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .page-two .chapter-item {
+    font-size: 11pt;
+    color: #111111;
+    line-height: 1.7;
+    padding-left: 2mm;
+    margin-bottom: 3mm;
+    max-width: 150mm;
+  }
+
+  .page-two .chapter-number {
+    color: #666666;
+    display: inline-block;
+    width: 7mm;
+  }
+
+  /* ─── CHAPTER OPENER ─── */
+
+  .chapter-opener {
+    padding-top: 0;
+    page-break-before: always;
+  }
+
+  .chapter-opener .accent-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: {{accentColour}};
+  }
+
+  .chapter-opener .chapter-label {
+    margin-top: 35mm;
+    padding-left: 0;
+    font-size: 9pt;
+    color: #666666;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .chapter-opener .chapter-title {
+    margin-top: 3mm;
+    padding-left: 0;
+    font-size: 20pt;
+    font-weight: 700;
+    color: #000000;
+    line-height: 1.25;
+    max-width: 150mm;
+  }
+
+  .chapter-opener .pull-forward {
+    margin-top: 6mm;
+    padding-left: 0;
+    padding-right: 8mm;
+    font-size: 10.5pt;
+    color: #444444;
+    line-height: 1.65;
+    max-width: 150mm;
+    font-style: italic;
+    border-left: 2px solid {{accentColour}};
+    padding-left: 6mm;
+    margin-left: -2mm;
+  }
+
+  .chapter-opener .body-start {
+    margin-top: 10mm;
+    padding-left: 0;
+  }
+
+  /* ─── BODY PAGES ─── */
+
+  .body-page {
+    page-break-before: always;
+    padding-top: 20mm;
+  }
+
+  .subheader {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #000000;
+    margin-top: 7mm;
+    margin-bottom: 3mm;
+    page-break-after: avoid;
+    letter-spacing: 0.2px;
+  }
+
+  .subheader:first-child {
+    margin-top: 0;
+  }
+
+  .body-text {
+    font-size: 10pt;
+    line-height: 1.65;
+    color: #111111;
+    margin-bottom: 3.5mm;
+    max-width: 160mm;
+  }
+
+  .pull-quote {
+    margin: 6mm 0 6mm 4mm;
+    padding: 2mm 0 2mm 5mm;
+    border-left: 3px solid {{accentColour}};
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: #111111;
+    page-break-inside: avoid;
+    max-width: 155mm;
+  }
+
+  .pull-quote .attribution {
+    margin-top: 2mm;
+    font-size: 9pt;
+    color: #666666;
+  }
+
+  /* ─── BODY TEXT IN CHAPTER OPENER ─── */
+
+  .chapter-opener .body-start .subheader {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #000000;
+    margin-top: 6mm;
+    margin-bottom: 3mm;
+    page-break-after: avoid;
+  }
+
+  .chapter-opener .body-start .body-text {
+    font-size: 10pt;
+    line-height: 1.65;
+    color: #111111;
+    margin-bottom: 3.5mm;
+    max-width: 155mm;
+  }
+
+  .chapter-opener .body-start .pull-quote {
+    margin: 6mm 0 6mm 4mm;
+    padding: 2mm 0 2mm 5mm;
+    border-left: 3px solid {{accentColour}};
+    max-width: 150mm;
+    font-size: 10.5pt;
+  }
+
+  /* ─── LAST PAGE ─── */
+
+  .last-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    page-break-before: always;
+  }
+
+  .last-page .brand {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #000000;
+    letter-spacing: 0.5px;
+    margin-bottom: 12mm;
+  }
+
+  .last-page .cta-text {
+    font-size: 11pt;
+    color: #666666;
+    line-height: 1.8;
+    margin-bottom: 6mm;
+  }
+
+  .last-page .cta-url {
+    font-size: 11pt;
+    color: #111111;
+    font-weight: 700;
+  }
+
+  /* ─── UTILITIES ─── */
+
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+</style>
+</head>
+<body>
+{{content}}
+</body>
+</html>
