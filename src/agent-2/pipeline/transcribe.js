@@ -1,10 +1,10 @@
 // Agent 2: Deepgram transcription — receives audio URL, returns structured transcript
-const { createClient } = require('@deepgram/sdk');
+const { DefaultDeepgramClient } = require('@deepgram/sdk');
 const { supabase } = require('../utils/supabase');
 const { logPipelineStep, logCost } = require('../utils/logger');
 require('dotenv').config();
 
-const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgram = new DefaultDeepgramClient({ apiKey: process.env.DEEPGRAM_API_KEY });
 
 // Deepgram Nova-2 pricing: $0.0043/min
 const DEEPGRAM_COST_PER_MINUTE = 0.0043;
@@ -12,21 +12,15 @@ const DEEPGRAM_COST_PER_MINUTE = 0.0043;
 async function transcribeEpisode(episodeId, audioUrl) {
   const startedAt = new Date().toISOString();
 
-  const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
-    { url: audioUrl },
-    {
-      model: 'nova-2',
-      language: 'en',
-      punctuate: true,
-      paragraphs: true,
-      diarize: true,
-      smart_format: true,
-    }
-  );
-
-  if (error) {
-    throw new Error(`Deepgram transcription failed: ${error.message}`);
-  }
+  const result = await deepgram.listen.v1.media.transcribeUrl({
+    url: audioUrl,
+    model: 'nova-2',
+    language: 'en',
+    punctuate: true,
+    paragraphs: true,
+    diarize: true,
+    smart_format: true,
+  });
 
   const channel = result.results.channels[0];
   const alternative = channel.alternatives[0];
