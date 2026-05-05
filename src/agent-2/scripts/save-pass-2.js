@@ -96,11 +96,25 @@ FLAG FOR REVIEW: ${flagUrl}
 (Click Approve to trigger Pass 3 on the next routine fire.
  Click Flag to pause processing.)`;
 
-  await sendAlertEmail(`Outline review: ${ep?.title || episodeId}`, body);
+  // SKIP_EMAIL=true bypasses Resend during smoke testing. The outline body
+  // is logged to stderr instead so it shows up in the routine session log.
+  // Approve/flag still works via the Edge Function URL — just open it in a
+  // browser or curl the approve link directly.
+  const skipEmail = process.env.SKIP_EMAIL === 'true' || !process.env.RESEND_API_KEY;
+
+  if (skipEmail) {
+    console.error('--- OUTLINE REVIEW (SKIP_EMAIL active, no email sent) ---');
+    console.error(body);
+    console.error('--- end outline review ---');
+    console.error(`To approve: open ${approveUrl}`);
+    console.error(`To flag:    open ${flagUrl}`);
+  } else {
+    await sendAlertEmail(`Outline review: ${ep?.title || episodeId}`, body);
+  }
 
   await setStep(episodeId, 'processing', 'awaiting_approval', 'pass_2');
 
-  console.log(JSON.stringify({ ok: true, ...parsed, emailSent: true }));
+  console.log(JSON.stringify({ ok: true, ...parsed, emailSent: !skipEmail, approveUrl }));
 }
 
 main().catch((err) => {
