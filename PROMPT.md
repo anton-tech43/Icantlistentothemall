@@ -10,9 +10,19 @@ Turns business-podcast episodes into short, well-edited ebooks (PDFs) and a bi-w
 
 ```bash
 npm ci --silent
+node src/agent-2/scripts/bootstrap-secrets.js
 ```
 
-(Skip if `node_modules` already cached by the environment.)
+The bootstrap step calls a Supabase Edge Function with the `PIPELINE_API_TOKEN`
+from the Cloud Environment, fetches the actual service keys
+(`SUPABASE_SERVICE_ROLE_KEY`, `DEEPGRAM_API_KEY`, `RESEND_API_KEY`) from
+Supabase's encrypted secret store, and writes them to `.env` at the repo
+root. All subsequent scripts use `require('dotenv').config()` and pick
+them up automatically.
+
+If bootstrap fails, every other script will fail too — stop the fire and
+report the bootstrap error. Common causes: PIPELINE_API_TOKEN mismatch,
+SUPABASE_URL wrong, or the function isn't deployed.
 
 ## Fire flow
 
