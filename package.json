@@ -1,0 +1,35 @@
+{
+  "name": "icantlistentothemall",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "agent2": "node src/agent-2/index.js",
+    "agent2:seed": "node src/agent-2/prompts/seed-prompts.js",
+    "episode": "node scripts/select-episode.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anton-tech43/Icantlistentothemall.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/anton-tech43/Icantlistentothemall/issues"
+  },
+  "homepage": "https://github.com/anton-tech43/Icantlistentothemall#readme",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
+    "@deepgram/sdk": "^5.0.0",
+    "@supabase/supabase-js": "^2.103.3",
+    "better-sqlite3": "^12.9.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "puppeteer-core": "^24.41.0",
+    "resend": "^6.12.0",
+    "rss-parser": "^3.13.0"
+  }
+}
