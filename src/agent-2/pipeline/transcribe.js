@@ -4,7 +4,12 @@ const { supabase } = require('../utils/supabase');
 const { logPipelineStep, logCost } = require('../utils/logger');
 require('dotenv').config();
 
-const deepgram = new DefaultDeepgramClient({ apiKey: process.env.DEEPGRAM_API_KEY });
+// SDK v5 quirk: HeaderAuthProvider sends `Authorization: <apiKey>` raw,
+// but Deepgram's REST API requires `Authorization: Token <key>`. Prefix
+// the value here so the eventual header is correct.
+const rawKey = (process.env.DEEPGRAM_API_KEY || '').trim();
+const apiKey = rawKey.startsWith('Token ') ? rawKey : `Token ${rawKey}`;
+const deepgram = new DefaultDeepgramClient({ apiKey });
 
 // Deepgram Nova-2 pricing: $0.0043/min
 const DEEPGRAM_COST_PER_MINUTE = 0.0043;
