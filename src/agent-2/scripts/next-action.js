@@ -25,15 +25,32 @@ async function nextAction() {
     return { action: 'idle', reason: `weekly_cost_cap`, weeklyCost };
   }
 
-  // Find an active in-flight episode first (already mid-pipeline)
-  const { data: active } = await supabase
+  // Prefer episodes already mid-pipeline (status='processing') over fresh
+  // queued ones — finish what we started before starting a new one.
+  let active = null;
+
+  const { data: inFlight } = await supabase
     .from('processing_queue')
     .select('episode_id, status, current_step, episodes(*, podcasts(*))')
-    .in('status', ['queued', 'processing'])
+    .eq('status', 'processing')
     .neq('current_step', 'awaiting_approval')
+    .neq('current_step', 'pass_2_flagged')
     .order('created_at', { ascending: true })
     .limit(1)
     .maybeSingle();
+
+  if (inFlight) {
+    active = inFlight;
+  } else {
+    const { data: fresh } = await supabase
+      .from('processing_queue')
+      .select('episode_id, status, current_step, episodes(*, podcasts(*))')
+      .eq('status', 'queued')
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    active = fresh;
+  }
 
   if (!active) {
     // Check if there's an episode awaiting approval that just got approved
@@ -78,6 +95,7 @@ async function actionForStatus(queueItem) {
   switch (status) {
     case 'pending':
     case 'queued':
+    case 'transcribing': // recover from a fire that crashed mid-transcription
       return { action: 'transcribe', episode: baseEpisode, audioUrl: ep.audio_url };
 
     case 'transcribed':
